@@ -43,7 +43,7 @@ CREATE TABLE pojmovi (
 --
 CREATE TABLE poslodavci (
   id                  int NOT NULL AUTO_INCREMENT,
-  naziv               varchar(200) NOT NULL,
+  naziv               varchar(200) BINARY NOT NULL,
   adresa              varchar(200) CHARACTER SET utf8mb4,
   mje_id              int,
   url                 varchar(200),
