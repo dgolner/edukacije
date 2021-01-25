@@ -10,102 +10,167 @@ DROP TABLE mjesta;
 --
 DROP SEQUENCE MJE_SEQ;
 CREATE SEQUENCE MJE_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE mjesta (
+CREATE TABLE MJESTA (
   id                  number(30) DEFAULT MJE_SEQ.nextval NOT NULL,
   naziv               varchar2(100) NOT NULL,
-  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT MJE_NAZIV_UK UNIQUE (naziv)
+  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+CREATE UNIQUE INDEX MJE_PK ON MJESTA (id);
+CREATE UNIQUE INDEX MJE_NAZIV_UK ON MJESTA (naziv);
+ALTER TABLE MJESTA ADD (
+  CONSTRAINT MJE_PK
+  PRIMARY KEY (id)
+  USING INDEX MJE_PK);
 
 --
 DROP SEQUENCE KAT_SEQ;
 CREATE SEQUENCE KAT_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE kategorije (
+CREATE TABLE KATEGORIJE (
   id                  number(30) DEFAULT KAT_SEQ.nextval NOT NULL,
   naziv               varchar2(100) NOT NULL,
-  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,  
-  PRIMARY KEY (id),
-  CONSTRAINT KAT_NAZIV_UK UNIQUE (naziv)
+  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+CREATE UNIQUE INDEX KAT_PK ON KATEGORIJE (id);
+CREATE UNIQUE INDEX KAT_NAZIV_UK ON KATEGORIJE (naziv);
+ALTER TABLE KATEGORIJE ADD (
+  CONSTRAINT KAT_PK
+  PRIMARY KEY (id)
+  USING INDEX KAT_PK);
 
 --
 DROP SEQUENCE POJ_SEQ;
 CREATE SEQUENCE POJ_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE pojmovi (
+CREATE TABLE POJMOVI (
   id                  number(30) DEFAULT POJ_SEQ.nextval NOT NULL,
   naziv               varchar2(100) NOT NULL,
-  kat_id              number(30) CONSTRAINT POJ_KAT_ID_FK REFERENCES kategorije (id),
+  kat_id              number(30),
   aktivan             number(1) DEFAULT 0 NOT NULL, -- 0 - aktivan, 1 - neaktivan
   datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  datum_promjene      timestamp,
-  PRIMARY KEY (id),
-  CONSTRAINT POJ_NAZIV_UK UNIQUE (naziv)
+  datum_promjene      timestamp
 );
-CREATE INDEX POJ_KAT_ID_IDX ON pojmovi (kat_id);
-CREATE INDEX POJ_AKTIVAN_IDX ON pojmovi (aktivan); 
+CREATE UNIQUE INDEX POJ_PK ON POJMOVI (id);
+CREATE UNIQUE INDEX POJ_NAZIV_UK ON POJMOVI (naziv);
+CREATE INDEX POJ_AKTIVAN_IDX ON POJMOVI (aktivan);
+CREATE INDEX POJ_KAT_ID_FK ON POJMOVI (kat_id);
+ALTER TABLE POJMOVI ADD (
+  CONSTRAINT POJ_PK
+  PRIMARY KEY (id)
+  USING INDEX POJ_PK);
+ALTER TABLE POJMOVI ADD (
+  CONSTRAINT POJ_KAT_ID_FK 
+  FOREIGN KEY (kat_id) 
+  REFERENCES KATEGORIJE (id));
 
 --
 DROP SEQUENCE POS_SEQ;
 CREATE SEQUENCE POS_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE poslodavci (
+CREATE TABLE POSLODAVCI (
   id                  number(30) DEFAULT POS_SEQ.nextval NOT NULL,
   naziv               varchar2(200) NOT NULL,
   adresa              varchar2(200),
-  mje_id              number(30) CONSTRAINT POS_MJE_ID_FK REFERENCES mjesta (id),
+  mje_id              number(30),
   url                 varchar2(200),
   url_profila         varchar2(400),
   aktivan             number(1) DEFAULT 0 NOT NULL, -- 0 - aktivan, 1 - neaktivan
   datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  datum_promjene      timestamp,
-  PRIMARY KEY (id),
-  CONSTRAINT POS_NAZIV_UK UNIQUE (naziv)  
+  datum_promjene      timestamp  
 );
-CREATE INDEX POS_AKTIVAN_IDX ON poslodavci (aktivan);
+CREATE UNIQUE INDEX POS_PK ON POSLODAVCI (id);
+CREATE UNIQUE INDEX POS_NAZIV_UK ON POSLODAVCI (naziv);
+CREATE INDEX POS_AKTIVAN_IDX ON POSLODAVCI (aktivan);
+CREATE INDEX POJ_MJE_ID_FK ON POSLODAVCI (mje_id);
+ALTER TABLE POSLODAVCI ADD (
+  CONSTRAINT POS_PK
+  PRIMARY KEY (id)
+  USING INDEX POS_PK);
+ALTER TABLE POSLODAVCI ADD (
+  CONSTRAINT POJ_MJE_ID_FK 
+  FOREIGN KEY (mje_id) 
+  REFERENCES MJESTA (id));
 
 --
 DROP SEQUENCE OGL_SEQ;
 CREATE SEQUENCE OGL_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE oglasi (
+CREATE TABLE OGLASI (
   id                  number(30) DEFAULT OGL_SEQ.nextval NOT NULL,
   naziv               varchar2(200) NOT NULL,
-  kat_id              number(30) CONSTRAINT OGL_KAT_ID_FK REFERENCES kategorije (id) NOT NULL,
-  pos_id              number(30) CONSTRAINT OGL_POS_ID_FK REFERENCES poslodavci (id) NOT NULL,
+  kat_id              number(30) NOT NULL,
+  pos_id              number(30) NOT NULL,
   url                 varchar2(200) NOT NULL,
   opis_posla          clob,
   rok_prijave         date, 
   aktivan             number(1) DEFAULT 0 NOT NULL, -- 0 - aktivan, 1 - neaktivan
   datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  datum_promjene      timestamp,
-  PRIMARY KEY (id),
-  CONSTRAINT OGL_URL_UK UNIQUE (url)
+  datum_promjene      timestamp
 );
-CREATE INDEX OGL_NAZIV_IDX ON oglasi (naziv, aktivan, rok_prijave);
-CREATE INDEX OGL_AKTIVAN_IDX ON oglasi (aktivan, rok_prijave);
-CREATE INDEX OGL_ROK_IDX ON oglasi (rok_prijave, aktivan);
-CREATE INDEX OGL_KAT_ID_IDX ON oglasi (kat_id);
-CREATE INDEX OGL_POS_ID_IDX ON oglasi (pos_id);
+CREATE UNIQUE INDEX OGL_PK ON OGLASI (id);
+CREATE UNIQUE INDEX OGL_URL_UK ON OGLASI (url);
+CREATE INDEX OGL_NAZIV_IDX ON OGLASI (naziv, aktivan, rok_prijave);
+CREATE INDEX OGL_AKTIVAN_IDX ON OGLASI (aktivan, rok_prijave);
+CREATE INDEX OGL_ROK_IDX ON OGLASI (rok_prijave, aktivan);
+CREATE INDEX OGL_KAT_ID_FK ON OGLASI (kat_id);
+CREATE INDEX OGL_POS_ID_FK ON OGLASI (pos_id);
+ALTER TABLE OGLASI ADD (
+  CONSTRAINT OGL_PK
+  PRIMARY KEY (id)
+  USING INDEX OGL_PK);
+ALTER TABLE OGLASI ADD (
+  CONSTRAINT OGL_KAT_ID_FK 
+  FOREIGN KEY (kat_id) 
+  REFERENCES KATEGORIJE (id));
+ALTER TABLE OGLASI ADD (
+  CONSTRAINT OGL_POS_ID_FK 
+  FOREIGN KEY (pos_id) 
+  REFERENCES POSLODAVCI (id));
 
 --
 DROP SEQUENCE OGM_SEQ;
 CREATE SEQUENCE OGM_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE oglasi_mjesta (
+CREATE TABLE OGLASI_MJESTA (
   id                  number(30) DEFAULT OGM_SEQ.nextval NOT NULL,
-  ogl_id              number(30) CONSTRAINT OGM_OGL_ID_FK REFERENCES oglasi (id) NOT NULL,
-  mje_id              number(30) CONSTRAINT OGM_MJE_ID_FK REFERENCES mjesta (id) NOT NULL,
-  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT OGM_OGL_MJE_UK UNIQUE (ogl_id, mje_id)
+  ogl_id              number(30) NOT NULL,
+  mje_id              number(30) NOT NULL,
+  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+CREATE UNIQUE INDEX OGM_PK ON OGLASI_MJESTA (id);
+CREATE UNIQUE INDEX OGM_OGL_MJE_UK ON OGLASI_MJESTA (ogl_id, mje_id);
+CREATE INDEX OGM_OGL_ID_FK ON OGLASI_MJESTA (ogl_id);
+CREATE INDEX OGM_MJE_ID_FK ON OGLASI_MJESTA (mje_id);
+ALTER TABLE OGLASI_MJESTA ADD (
+  CONSTRAINT OGM_PK
+  PRIMARY KEY (id)
+  USING INDEX OGM_PK);
+ALTER TABLE OGLASI_MJESTA ADD (
+  CONSTRAINT OGM_OGL_ID_FK 
+  FOREIGN KEY (ogl_id) 
+  REFERENCES OGLASI (id));
+ALTER TABLE OGLASI_MJESTA ADD (
+  CONSTRAINT OGM_MJE_ID_FK 
+  FOREIGN KEY (mje_id) 
+  REFERENCES MJESTA (id));
 
 --
 DROP SEQUENCE OGP_SEQ;
 CREATE SEQUENCE OGP_SEQ START WITH 1 INCREMENT BY 1;
-CREATE TABLE oglasi_pojmovi (
+CREATE TABLE OGLASI_POJMOVI (
   id                  number(30) DEFAULT OGP_SEQ.nextval NOT NULL,
-  ogl_id              number(30) CONSTRAINT OGP_OGL_ID_FK REFERENCES oglasi (id) NOT NULL,
-  poj_id              number(30) CONSTRAINT OGP_POJ_ID_FK REFERENCES pojmovi (id) NOT NULL,
-  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  PRIMARY KEY (id),
-  CONSTRAINT OGP_OGL_POJ_UK UNIQUE (ogl_id, poj_id)  
+  ogl_id              number(30) NOT NULL,
+  poj_id              number(30) NOT NULL,
+  datum_kreiranja     timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL  
 );
+CREATE UNIQUE INDEX OGP_PK ON OGLASI_POJMOVI (id);
+CREATE UNIQUE INDEX OGP_OGL_POJ_UK ON OGLASI_POJMOVI (ogl_id, poj_id);
+CREATE INDEX OGP_OGL_ID_FK ON OGLASI_POJMOVI (ogl_id);
+CREATE INDEX OGP_POJ_ID_FK ON OGLASI_POJMOVI (poj_id);
+ALTER TABLE OGLASI_POJMOVI ADD (
+  CONSTRAINT OGP_PK
+  PRIMARY KEY (id)
+  USING INDEX OGP_PK);
+ALTER TABLE OGLASI_POJMOVI ADD (
+  CONSTRAINT OGP_OGL_ID_FK 
+  FOREIGN KEY (ogl_id) 
+  REFERENCES OGLASI (id));
+ALTER TABLE OGLASI_POJMOVI ADD (
+  CONSTRAINT OGP_POJ_ID_FK 
+  FOREIGN KEY (poj_id) 
+  REFERENCES POJMOVI (id));
