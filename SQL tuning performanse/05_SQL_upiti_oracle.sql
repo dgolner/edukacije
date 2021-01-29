@@ -228,10 +228,10 @@ SELECT * FROM TABLE(dbms_xplan.Display(NULL, 'ST'));
 
 -- max, min, subquery, order by
 -- s min i max
-  SELECT id,
-         naziv,
-         d1 AS "Najraniji datum",
-         d2 AS "Najkasniji datum"
+  SELECT t1.id,
+         t1.naziv,
+         t1.d1 AS "Najraniji datum",
+         t1.d2 AS "Najkasniji datum"
     FROM (SELECT kat.id,
                  kat.naziv,
                  (SELECT MIN(ogl.rok_prijave)
@@ -243,35 +243,35 @@ SELECT * FROM TABLE(dbms_xplan.Display(NULL, 'ST'));
                    WHERE ogl.kat_id = kat.id)
                     d2
             FROM kategorije kat) t1
-ORDER BY d1 NULLS first,
-         d2 DESC NULLS first,
-         naziv;
+ORDER BY t1.d1 NULLS first,
+         t1.d2 DESC NULLS first,
+         t1.naziv;
 
 -- max, subquery, order by
-  SELECT id,
-         naziv,
+  SELECT kat.id,
+         kat.naziv,
          (SELECT MAX(ogl.rok_prijave)
             FROM oglasi ogl
            WHERE ogl.kat_id = kat.id) AS "Najkasniji datum"
     FROM kategorije kat
 ORDER BY "Najkasniji datum" NULLS first,
-         naziv;
+         kat.naziv;
 
 -- explain plan upita
 EXPLAIN PLAN SET statement_id = 'ST' FOR
-  SELECT id,
-         naziv,
+  SELECT kat.id,
+         kat.naziv,
          (SELECT MAX(ogl.rok_prijave)
             FROM oglasi ogl
            WHERE ogl.kat_id = kat.id) AS "Najkasniji datum"
     FROM kategorije kat
 ORDER BY "Najkasniji datum" NULLS first,
-         naziv;
+         kat.naziv;
 SELECT * FROM TABLE(dbms_xplan.Display(NULL, 'ST'));
 
 -- bez max, subquery, order
-  SELECT id,
-         naziv,
+  SELECT kat.id,
+         kat.naziv,
          (SELECT rok_prijave 
             FROM (SELECT ogl.rok_prijave
                     FROM oglasi ogl
@@ -280,12 +280,12 @@ SELECT * FROM TABLE(dbms_xplan.Display(NULL, 'ST'));
            WHERE ROWNUM < 2) AS "Najkasniji datum"
     FROM kategorije kat
 ORDER BY "Najkasniji datum" NULLS first,
-         naziv;
+         kat.naziv;
 
 -- explain plan upita
 EXPLAIN PLAN SET statement_id = 'ST' FOR
-  SELECT id,
-         naziv,
+  SELECT kat.id,
+         kat.naziv,
          (SELECT rok_prijave 
             FROM (SELECT ogl.rok_prijave
                     FROM oglasi ogl
@@ -294,7 +294,7 @@ EXPLAIN PLAN SET statement_id = 'ST' FOR
            WHERE ROWNUM < 2) AS "Najkasniji datum"
     FROM kategorije kat
 ORDER BY "Najkasniji datum" NULLS first,
-         naziv;
+         kat.naziv;
 SELECT * FROM TABLE(dbms_xplan.Display(NULL, 'ST'));
 
 -- in i exists
