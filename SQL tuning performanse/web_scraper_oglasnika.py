@@ -12,8 +12,8 @@ class WebScraper(object):
 
     """ učitavanje """
     def __init__(self):
-        foutmysql = open('web_scraper_mysql.sql', 'w', encoding='utf-8')
-        foutoraclesql = open('web_scraper_oracle.sql', 'w', encoding='utf-8')
+        foutmysql = open('web_scraper_mysql.sql', 'w')
+        foutoraclesql = open('web_scraper_oracle.sql', 'w')
         url = []
 
         for i in range(1, 29):
