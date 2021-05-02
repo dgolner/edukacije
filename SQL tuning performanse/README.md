@@ -1,5 +1,5 @@
 <h1>Predavanje na temu SQL tuning / performance - česte greške i kako ih ne ponoviti</h1>
-<h2>29.03.2021. - DevCafe Koprivnica</h2>
+<h2>29.04.2021. - DevCafe Koprivnica</h2>
 <h2>29.01.2021. - VUB Bjelovar</h2>
 <h2>05.06.2020. - FOI Varaždin</h2>
 <h2>05.06.2020. - FERIT Osijek</h2>
