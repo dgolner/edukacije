@@ -1,3 +1,10 @@
-<h1>2020. - 2021.</h1>
+# 2024.
 
-<h2>SQL tuning / performanse predavanja</h2>
+## GdjeSuKamere - meet up predavanje
+
+<br>
+<br>
+
+# 2020. - 2021.
+
+## SQL tuning / performanse predavanja
